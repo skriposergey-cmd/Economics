@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rewise Економіка">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Економіка послуг — Rewise Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--umbra:#6B4F3A;--umbra2:#8a6548;--linen:#F5F0EA;--graphite:#2C2C2C;--muted:#8a7f78;--border:#e0d9d3;--bg:#faf8f6;--card:#fff;--surface:#f5f0ea;--good:#3B6D11;--bad:#a33030}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--graphite);min-height:100vh}
+
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;width:340px;text-align:center}
+.login-logo{width:52px;height:52px;background:var(--umbra);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--linen);margin:0 auto 16px;letter-spacing:.5px}
+.login-input{width:100%;padding:11px 14px;font-size:14px;border:1px solid var(--border);border-radius:10px;font-family:inherit;margin-bottom:12px;background:var(--bg)}
+.login-input:focus{outline:none;border-color:var(--umbra)}
+.login-btn{width:100%;padding:12px;background:var(--umbra);color:var(--linen);border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
+.login-btn:hover{background:var(--umbra2)}
+.login-err{font-size:12px;color:var(--bad);margin-top:8px}
+
+.app{display:none;flex-direction:column;min-height:100vh}
+.topnav{background:var(--umbra);padding:0 20px;display:flex;align-items:center;height:52px}
+.topnav-brand{display:flex;align-items:center;gap:10px;margin-right:28px}
+.topnav-mark{width:30px;height:30px;background:rgba(245,240,234,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:var(--linen);letter-spacing:.3px}
+.topnav-name{font-size:13px;font-weight:500;color:var(--linen)}
+.nav-tab{padding:0 14px;height:52px;display:flex;align-items:center;font-size:13px;color:rgba(245,240,234,.6);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.nav-tab:hover{color:var(--linen)}
+.nav-tab.active{color:var(--linen);border-bottom-color:var(--linen)}
+.nav-right{margin-left:auto}
+.logout-btn{font-size:12px;color:rgba(245,240,234,.5);cursor:pointer;padding:5px 10px;border-radius:6px;border:1px solid rgba(245,240,234,.2)}
+.logout-btn:hover{color:var(--linen)}
+
+.page{display:none;padding:20px;max-width:1100px;margin:0 auto;width:100%}
+.page.active{display:block}
+
+h2.section-title{font-size:15px;font-weight:500;margin:0 0 12px;color:var(--graphite)}
+.hint{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px}
+
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select{padding:9px 11px;font-size:13px;border:1px solid var(--border);border-radius:9px;font-family:inherit;background:var(--bg);min-width:0}
+.field input:focus,.field select:focus{outline:none;border-color:var(--umbra)}
+.field.grow{flex:1;min-width:160px}
+.field.small{width:100px}
+.field.xsmall{width:80px}
+
+.btn{padding:9px 16px;background:var(--card);border:1px solid var(--border);border-radius:9px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--graphite);white-space:nowrap}
+.btn:hover{border-color:var(--umbra)}
+.btn-primary{background:var(--umbra);color:var(--linen);border-color:var(--umbra)}
+.btn-primary:hover{background:var(--umbra2)}
+.btn-danger{color:var(--bad)}
+.btn-sm{padding:6px 11px;font-size:12px}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;border-bottom:1px solid var(--border)}
+td{padding:9px 10px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.clickable{cursor:pointer}
+tr.clickable:hover{background:var(--surface)}
+.muted{color:var(--muted)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+
+.mat-row{display:grid;grid-template-columns:1fr 90px 70px 100px 32px;gap:8px;align-items:center;margin-bottom:8px}
+.mat-row select,.mat-row input{padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;font-family:inherit;background:var(--bg)}
+.mat-cost{font-size:13px;text-align:right;color:var(--graphite);font-variant-numeric:tabular-nums}
+.mat-remove{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--card);cursor:pointer;color:var(--bad);font-size:14px;line-height:1}
+.mat-remove:hover{border-color:var(--bad)}
+
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.sum-card{background:var(--surface);border-radius:10px;padding:12px 14px}
+.sum-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.sum-val{font-size:18px;font-weight:500}
+.sum-val.good{color:var(--good)}
+.sum-val.bad{color:var(--bad)}
+
+.empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+.status-msg{font-size:13px;padding:10px 14px;border-radius:9px;margin-top:10px}
+.status-msg.ok{background:#eaf3e0;color:var(--good)}
+.status-msg.err{background:#fbe9e9;color:var(--bad)}
+
+@media(max-width:760px){
+  .summary{grid-template-columns:1fr 1fr}
+  .mat-row{grid-template-columns:1fr;gap:6px}
+  .nav-tab{padding:0 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">RW</div>
+    <input type="password" class="login-input" id="pwd-input" placeholder="Пароль" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Увійти</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <nav class="topnav">
+    <div class="topnav-brand">
+      <div class="topnav-mark">RW</div>
+      <div class="topnav-name">Економіка</div>
+    </div>
+    <div class="nav-tab active" onclick="showPage('calc',this)">Розрахунок послуги</div>
+    <div class="nav-tab" onclick="showPage('materials',this)">Матеріали</div>
+    <div class="nav-right"><div class="logout-btn" onclick="logout()">Вийти</div></div>
+  </nav>
+
+  <!-- ───────────── РОЗРАХУНОК ───────────── -->
+  <div class="page active" id="page-calc">
+    <h2 class="section-title">Розрахунок собівартості послуги</h2>
+    <div class="hint">Обери послугу з прайсу або введи вручну, додай матеріали, що йдуть на неї. Норма-год і накладні можна заповнити пізніше — поки рахуй хоча б по матеріалах.</div>
+
+    <div class="card">
+      <div class="form-row">
+        <div class="field grow">
+          <label>Послуга</label>
+          <select id="service-select" onchange="onServiceSelect()"></select>
+        </div>
+        <div class="field small">
+          <label>Ціна продажу ₴</label>
+          <input type="number" id="service-price" oninput="recalc()">
+        </div>
+      </div>
+      <div class="form-row" id="manual-name-row" style="display:none">
+        <div class="field grow">
+          <label>Назва послуги (вручну)</label>
+          <input type="text" id="manual-name" placeholder="Якщо немає в прайсі" oninput="recalc()">
+        </div>
+      </div>
+
+      <h2 class="section-title" style="margin-top:18px">Матеріали</h2>
+      <div id="materials-list"></div>
+      <button class="btn btn-sm" onclick="addMatRow()">+ Додати матеріал</button>
+
+      <h2 class="section-title" style="margin-top:18px">Час і накладні</h2>
+      <div class="form-row">
+        <div class="field small">
+          <label>Норма-год</label>
+          <input type="number" id="norm-hours" step="0.1" placeholder="0" oninput="recalc()">
+        </div>
+        <div class="field small">
+          <label>₴ за норма-год</label>
+          <input type="number" id="hour-rate" placeholder="0" oninput="recalc()">
+        </div>
+        <div class="field small">
+          <label>Накладні ₴</label>
+          <input type="number" id="overhead" placeholder="0" oninput="recalc()">
+        </div>
+      </div>
+
+      <div class="summary">
+        <div class="sum-card"><div class="sum-label">Собівартість матеріалів</div><div class="sum-val" id="sum-mat">0 ₴</div></div>
+        <div class="sum-card"><div class="sum-label">Собівартість часу</div><div class="sum-val" id="sum-time">0 ₴</div></div>
+        <div class="sum-card"><div class="sum-label">Повна собівартість</div><div class="sum-val" id="sum-total">0 ₴</div></div>
+        <div class="sum-card"><div class="sum-label">Ціна продажу</div><div class="sum-val" id="sum-price">0 ₴</div></div>
+        <div class="sum-card"><div class="sum-label">Маржа</div><div class="sum-val" id="sum-margin">0 ₴</div></div>
+        <div class="sum-card"><div class="sum-label">Маржа %</div><div class="sum-val" id="sum-margin-pct">0%</div></div>
+      </div>
+
+      <div style="margin-top:16px">
+        <button class="btn btn-primary" onclick="saveEconomics()">Зберегти розрахунок</button>
+      </div>
+      <div id="calc-status"></div>
+    </div>
+
+    <h2 class="section-title">Збережені розрахунки</h2>
+    <div class="card" style="padding:0">
+      <table>
+        <thead><tr><th>Послуга</th><th>Ціна</th><th>Собівартість</th><th>Маржа</th><th>Маржа %</th><th>Оновлено</th></tr></thead>
+        <tbody id="econ-table-body"></tbody>
+      </table>
+      <div class="empty" id="econ-empty" style="display:none">Поки немає збережених розрахунків</div>
+    </div>
+  </div>
+
+  <!-- ───────────── МАТЕРІАЛИ ───────────── -->
+  <div class="page" id="page-materials">
+    <h2 class="section-title">Каталог матеріалів</h2>
+    <div class="hint">Вноси матеріал один раз — назва, обʼєм/вага упаковки і її ціна. Ціна за одиницю порахується сама, і далі ти просто обираєш матеріал зі списку в розрахунку послуги.</div>
+
+    <div class="card">
+      <div class="form-row">
+        <div class="field grow">
+          <label>Назва</label>
+          <input type="text" id="mat-name" placeholder="Наприклад, Фарба Fenice">
+        </div>
+        <div class="field small">
+          <label>Розмір упаковки</label>
+          <input type="number" id="mat-pack-size" placeholder="500">
+        </div>
+        <div class="field xsmall">
+          <label>Одиниця</label>
+          <select id="mat-unit">
+            <option value="г">г</option>
+            <option value="мл">мл</option>
+            <option value="шт">шт</option>
+            <option value="м">м</option>
+            <option value="упак">упак</option>
+          </select>
+        </div>
+        <div class="field small">
+          <label>Ціна упаковки ₴</label>
+          <input type="number" id="mat-pack-price" placeholder="450">
+        </div>
+        <div class="field grow">
+          <label>Постачальник (необов'язково)</label>
+          <input type="text" id="mat-supplier" placeholder="">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="mat-save-btn" onclick="saveMaterial()">Додати матеріал</button>
+      <button class="btn" id="mat-cancel-btn" onclick="resetMatForm()" style="display:none">Скасувати редагування</button>
+      <div id="mat-status"></div>
+    </div>
+
+    <div class="card" style="padding:0">
+      <table>
+        <thead><tr><th>Назва</th><th>Упаковка</th><th>Ціна упаковки</th><th>Ціна за од.</th><th>Постачальник</th><th>Оновлено</th></tr></thead>
+        <tbody id="mat-table-body"></tbody>
+      </table>
+      <div class="empty" id="mat-empty" style="display:none">Матеріалів ще немає — додай перший вище</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PWD_HASH = "70775e2a6abd151f90d68ec1cc3b5bad65e57f7c545b6790e744de1e4b7db78a";
+const SHEET_ID = "1kDJ893PFa_DTNKt-r8wQES_JFXbJSDNU8niRLz70Aao";
+const API_BASE = "https://price-production-97b5.up.railway.app";
+
+// ─── AUTH (спільний логін з CRM — той самий пароль і ключ сесії) ──────────────
+async function hashStr(s) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+async function doLogin() {
+  const h = await hashStr(document.getElementById("pwd-input").value);
+  if (h === PWD_HASH) {
+    document.getElementById("login-wrap").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+    sessionStorage.setItem("rw_auth","1");
+    loadData();
+  } else {
+    document.getElementById("login-err").textContent = "Невірний пароль";
+  }
+}
+
+if (sessionStorage.getItem("rw_auth") === "1") {
+  document.getElementById("login-wrap").style.display = "none";
+  document.getElementById("app").style.display = "flex";
+  loadData();
+}
+
+function logout() { sessionStorage.removeItem("rw_auth"); location.reload(); }
+
+function showPage(id, btn) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("page-" + id).classList.add("active");
+  btn.classList.add("active");
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+let SERVICES = [];   // [{name, price, unit}]
+let MATERIALS = [];  // [{name, packSize, unit, packPrice, unitPrice, supplier, updated}]
+let ECONOMICS = [];  // saved rows
+let matRows = [];    // current calc's material lines: [{name, qty}]
+let editingMaterial = null;
+
+async function gvizFetch(sheetName) {
+  const url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(sheetName);
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.replace(/^.*?({.*}).*$/s, "$1"));
+  return (json.table && json.table.rows) ? json.table.rows : [];
+}
+
+function cellStr(row, i) {
+  const c = row.c[i];
+  return c && c.v !== null && c.v !== undefined ? String(c.v) : "";
+}
+function cellNum(row, i) {
+  const v = cellStr(row, i).replace(",", ".");
+  const n = parseFloat(v);
+  return isNaN(n) ? 0 : n;
+}
+
+async function loadData() {
+  await Promise.all([loadServices(), loadMaterials(), loadEconomics()]);
+  renderServiceSelect();
+  renderMaterialsTable();
+  renderEconomicsTable();
+  addMatRow();
+  recalc();
+}
+
+async function loadServices() {
+  try {
+    const rows = await gvizFetch("Прайс");
+    SERVICES = rows.map(r => ({
+      name: cellStr(r, 3),
+      unit: cellStr(r, 4),
+      price: cellNum(r, 5)
+    })).filter(s => s.name);
+  } catch(e) { console.log("Не вдалося завантажити Прайс", e); SERVICES = []; }
+}
+
+async function loadMaterials() {
+  try {
+    const rows = await gvizFetch("Матеріали");
+    MATERIALS = rows.map(r => ({
+      name: cellStr(r, 0),
+      packSize: cellNum(r, 1),
+      unit: cellStr(r, 2),
+      packPrice: cellNum(r, 3),
+      unitPrice: cellNum(r, 4),
+      supplier: cellStr(r, 5),
+      updated: cellStr(r, 6)
+    })).filter(m => m.name);
+  } catch(e) { console.log("Не вдалося завантажити Матеріали", e); MATERIALS = []; }
+}
+
+async function loadEconomics() {
+  try {
+    const rows = await gvizFetch("Економіка");
+    ECONOMICS = rows.map(r => {
+      let materials = [];
+      try { materials = JSON.parse(cellStr(r, 2) || "[]"); } catch(e) {}
+      return {
+        service: cellStr(r, 0),
+        price: cellNum(r, 1),
+        materials,
+        materialsCost: cellNum(r, 3),
+        normHours: cellNum(r, 4),
+        hourRate: cellNum(r, 5),
+        timeCost: cellNum(r, 6),
+        overhead: cellNum(r, 7),
+        totalCost: cellNum(r, 8),
+        margin: cellNum(r, 9),
+        marginPct: cellNum(r, 10),
+        updated: cellStr(r, 11)
+      };
+    }).filter(e => e.service);
+  } catch(e) { console.log("Не вдалося завантажити Економіка", e); ECONOMICS = []; }
+}
+
+function fmt(n) { return (Math.round(n * 100) / 100).toLocaleString("uk-UA") + " ₴"; }
+function fmtPct(n) { return (Math.round(n * 10) / 10).toLocaleString("uk-UA") + "%"; }
+
+// ─── РОЗРАХУНОК ───────────────────────────────────────────────────────────────
+function renderServiceSelect() {
+  const sel = document.getElementById("service-select");
+  sel.innerHTML = '<option value="">— Обрати з прайсу —</option>' +
+    SERVICES.map((s,i) => `<option value="${i}">${s.name} (${s.price.toLocaleString("uk-UA")} ₴)</option>`).join("") +
+    '<option value="manual">✎ Ввести вручну</option>';
+}
+
+function onServiceSelect() {
+  const val = document.getElementById("service-select").value;
+  const manualRow = document.getElementById("manual-name-row");
+  if (val === "manual") {
+    manualRow.style.display = "flex";
+    document.getElementById("service-price").value = "";
+  } else if (val !== "") {
+    manualRow.style.display = "none";
+    const s = SERVICES[parseInt(val)];
+    document.getElementById("service-price").value = s.price;
+  } else {
+    manualRow.style.display = "none";
+  }
+  recalc();
+}
+
+function currentServiceName() {
+  const val = document.getElementById("service-select").value;
+  if (val === "manual") return document.getElementById("manual-name").value.trim();
+  if (val !== "") return SERVICES[parseInt(val)].name;
+  return "";
+}
+
+function matOptionsHtml(selected) {
+  return '<option value="">— матеріал —</option>' +
+    MATERIALS.map(m => `<option value="${m.name}" ${m.name===selected?'selected':''}>${m.name} (${fmt(m.unitPrice)}/${m.unit})</option>`).join("");
+}
+
+function addMatRow(name, qty) {
+  matRows.push({name: name || "", qty: qty || ""});
+  renderMatRows();
+}
+
+function removeMatRow(idx) {
+  matRows.splice(idx, 1);
+  if (!matRows.length) matRows.push({name:"", qty:""});
+  renderMatRows();
+  recalc();
+}
+
+function renderMatRows() {
+  const el = document.getElementById("materials-list");
+  el.innerHTML = matRows.map((r, i) => {
+    const mat = MATERIALS.find(m => m.name === r.name);
+    const unit = mat ? mat.unit : "";
+    const cost = mat && r.qty ? mat.unitPrice * parseFloat(r.qty) : 0;
+    return `<div class="mat-row">
+      <select onchange="matRows[${i}].name=this.value;renderMatRows();recalc()">${matOptionsHtml(r.name)}</select>
+      <input type="number" placeholder="к-сть" value="${r.qty}" oninput="matRows[${i}].qty=this.value;updateMatCost(${i});recalc()">
+      <div class="mat-cost" style="text-align:left;color:var(--muted)">${unit}</div>
+      <div class="mat-cost" id="mat-cost-${i}">${cost ? fmt(cost) : "—"}</div>
+      <button class="mat-remove" onclick="removeMatRow(${i})">×</button>
+    </div>`;
+  }).join("");
+}
+
+function updateMatCost(i) {
+  const r = matRows[i];
+  const mat = MATERIALS.find(m => m.name === r.name);
+  const cost = mat && r.qty ? mat.unitPrice * parseFloat(r.qty) : 0;
+  const cell = document.getElementById("mat-cost-" + i);
+  if (cell) cell.textContent = cost ? fmt(cost) : "—";
+}
+
+function materialsCost() {
+  let sum = 0;
+  matRows.forEach(r => {
+    const mat = MATERIALS.find(m => m.name === r.name);
+    if (mat && r.qty) sum += mat.unitPrice * parseFloat(r.qty);
+  });
+  return sum;
+}
+
+function recalc() {
+  const price = parseFloat(document.getElementById("service-price").value) || 0;
+  const matCost = materialsCost();
+  const normHours = parseFloat(document.getElementById("norm-hours").value) || 0;
+  const hourRate = parseFloat(document.getElementById("hour-rate").value) || 0;
+  const overhead = parseFloat(document.getElementById("overhead").value) || 0;
+  const timeCost = normHours * hourRate;
+  const totalCost = matCost + timeCost + overhead;
+  const margin = price - totalCost;
+  const marginPct = price ? (margin / price * 100) : 0;
+
+  document.getElementById("sum-mat").textContent = fmt(matCost);
+  document.getElementById("sum-time").textContent = fmt(timeCost);
+  document.getElementById("sum-total").textContent = fmt(totalCost);
+  document.getElementById("sum-price").textContent = fmt(price);
+  const marginEl = document.getElementById("sum-margin");
+  const pctEl = document.getElementById("sum-margin-pct");
+  marginEl.textContent = fmt(margin);
+  pctEl.textContent = fmtPct(marginPct);
+  marginEl.className = "sum-val " + (margin >= 0 ? "good" : "bad");
+  pctEl.className = "sum-val " + (margin >= 0 ? "good" : "bad");
+
+  return {price, matCost, normHours, hourRate, timeCost, overhead, totalCost, margin, marginPct};
+}
+
+async function saveEconomics() {
+  const service = currentServiceName();
+  const statusEl = document.getElementById("calc-status");
+  if (!service) {
+    statusEl.innerHTML = '<div class="status-msg err">Вкажи назву послуги</div>';
+    return;
+  }
+  const vals = recalc();
+  const materials = matRows.filter(r => r.name && r.qty).map(r => ({name: r.name, qty: parseFloat(r.qty)}));
+
+  statusEl.innerHTML = '<div class="status-msg" style="background:var(--surface);color:var(--muted)">⏳ Збереження...</div>';
+  try {
+    const res = await fetch(API_BASE + "/economics", {
+      method: "POST",
+      mode: "cors",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        service,
+        price: vals.price,
+        materials,
+        materialsCost: Math.round(vals.matCost * 100) / 100,
+        normHours: vals.normHours,
+        hourRate: vals.hourRate,
+        timeCost: Math.round(vals.timeCost * 100) / 100,
+        overhead: vals.overhead,
+        totalCost: Math.round(vals.totalCost * 100) / 100,
+        margin: Math.round(vals.margin * 100) / 100,
+        marginPct: Math.round(vals.marginPct * 10) / 10
+      })
+    });
+    const result = await res.json();
+    if (result.status === "ok") {
+      statusEl.innerHTML = '<div class="status-msg ok">✅ Збережено</div>';
+      await loadEconomics();
+      renderEconomicsTable();
+    } else {
+      statusEl.innerHTML = '<div class="status-msg err">Помилка: ' + result.message + '</div>';
+    }
+  } catch(e) {
+    statusEl.innerHTML = '<div class="status-msg err">Помилка збереження: ' + e.message + '</div>';
+  }
+}
+
+function renderEconomicsTable() {
+  const body = document.getElementById("econ-table-body");
+  const empty = document.getElementById("econ-empty");
+  if (!ECONOMICS.length) {
+    body.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+  body.innerHTML = ECONOMICS.map((e, i) => `
+    <tr class="clickable" onclick="loadEconomicsRow(${i})">
+      <td>${e.service}</td>
+      <td class="num">${fmt(e.price)}</td>
+      <td class="num">${fmt(e.totalCost)}</td>
+      <td class="num">${fmt(e.margin)}</td>
+      <td class="num">${fmtPct(e.marginPct)}</td>
+      <td class="muted">${e.updated}</td>
+    </tr>
+  `).join("");
+}
+
+function loadEconomicsRow(i) {
+  const e = ECONOMICS[i];
+  const sel = document.getElementById("service-select");
+  const idx = SERVICES.findIndex(s => s.name === e.service);
+  if (idx >= 0) {
+    sel.value = String(idx);
+    document.getElementById("manual-name-row").style.display = "none";
+  } else {
+    sel.value = "manual";
+    document.getElementById("manual-name-row").style.display = "flex";
+    document.getElementById("manual-name").value = e.service;
+  }
+  document.getElementById("service-price").value = e.price;
+  document.getElementById("norm-hours").value = e.normHours || "";
+  document.getElementById("hour-rate").value = e.hourRate || "";
+  document.getElementById("overhead").value = e.overhead || "";
+  matRows = e.materials.length ? e.materials.map(m => ({name: m.name, qty: m.qty})) : [{name:"",qty:""}];
+  renderMatRows();
+  recalc();
+  document.getElementById("calc-status").innerHTML = "";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+// ─── МАТЕРІАЛИ ────────────────────────────────────────────────────────────────
+function renderMaterialsTable() {
+  const body = document.getElementById("mat-table-body");
+  const empty = document.getElementById("mat-empty");
+  if (!MATERIALS.length) {
+    body.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+  body.innerHTML = MATERIALS.map((m, i) => `
+    <tr class="clickable" onclick="editMaterial(${i})">
+      <td>${m.name}</td>
+      <td>${m.packSize} ${m.unit}</td>
+      <td class="num">${fmt(m.packPrice)}</td>
+      <td class="num">${fmt(m.unitPrice)}/${m.unit}</td>
+      <td class="muted">${m.supplier || "—"}</td>
+      <td class="muted">${m.updated}</td>
+    </tr>
+  `).join("");
+}
+
+function editMaterial(i) {
+  const m = MATERIALS[i];
+  editingMaterial = m.name;
+  document.getElementById("mat-name").value = m.name;
+  document.getElementById("mat-pack-size").value = m.packSize;
+  document.getElementById("mat-unit").value = m.unit;
+  document.getElementById("mat-pack-price").value = m.packPrice;
+  document.getElementById("mat-supplier").value = m.supplier;
+  document.getElementById("mat-save-btn").textContent = "Зберегти зміни";
+  document.getElementById("mat-cancel-btn").style.display = "inline-block";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function resetMatForm() {
+  editingMaterial = null;
+  document.getElementById("mat-name").value = "";
+  document.getElementById("mat-pack-size").value = "";
+  document.getElementById("mat-pack-price").value = "";
+  document.getElementById("mat-supplier").value = "";
+  document.getElementById("mat-save-btn").textContent = "Додати матеріал";
+  document.getElementById("mat-cancel-btn").style.display = "none";
+  document.getElementById("mat-status").innerHTML = "";
+}
+
+async function saveMaterial() {
+  const name = document.getElementById("mat-name").value.trim();
+  const packSize = parseFloat(document.getElementById("mat-pack-size").value);
+  const unit = document.getElementById("mat-unit").value;
+  const packPrice = parseFloat(document.getElementById("mat-pack-price").value);
+  const supplier = document.getElementById("mat-supplier").value.trim();
+  const statusEl = document.getElementById("mat-status");
+
+  if (!name || !packSize || !packPrice) {
+    statusEl.innerHTML = '<div class="status-msg err">Заповни назву, розмір упаковки і ціну</div>';
+    return;
+  }
+  const unitPrice = Math.round((packPrice / packSize) * 100) / 100;
+
+  statusEl.innerHTML = '<div class="status-msg" style="background:var(--surface);color:var(--muted)">⏳ Збереження...</div>';
+  try {
+    const res = await fetch(API_BASE + "/material", {
+      method: "POST",
+      mode: "cors",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({name, packSize, unit, packPrice, unitPrice, supplier})
+    });
+    const result = await res.json();
+    if (result.status === "ok") {
+      statusEl.innerHTML = '<div class="status-msg ok">✅ Збережено</div>';
+      resetMatForm();
+      await loadMaterials();
+      renderMaterialsTable();
+      renderMatRows();
+    } else {
+      statusEl.innerHTML = '<div class="status-msg err">Помилка: ' + result.message + '</div>';
+    }
+  } catch(e) {
+    statusEl.innerHTML = '<div class="status-msg err">Помилка збереження: ' + e.message + '</div>';
+  }
+}
+</script>
+</body>
+</html>
